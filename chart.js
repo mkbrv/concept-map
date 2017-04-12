@@ -98,10 +98,7 @@ function buildChart(data) {
             data.outer[i1++] = outer[i];
     }
 
-    console.log(data.outer.reduce(function (a, b) {
-            return a + b.related_links.length;
-        }, 0) / data.outer.length);
-
+   
 
     var diameter = 960;
     var rect_width = 180;
@@ -256,7 +253,6 @@ function buildChart(data) {
             return d.name;
         });
 
-    console.log(data);
     d3.select(self.frameElement).style("height", diameter - 150 + "px");
 
     function mouseover(d) {
