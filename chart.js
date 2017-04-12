@@ -5,7 +5,27 @@ function fetchData() {
 
     d3.json("data.json", function (error, data) {
         if (error) return console.warn(error);
-        buildChart(data);
+
+        var aggregatedData = {};
+        /// format: Each  publication has an array of endorsed presidents;
+        data.forEach(function (d) {
+            if (aggregatedData[d["publication"]]) {
+                aggregatedData[d["publication"]]["endorsements"].push(d);
+            } else {
+                aggregatedData[d["publication"]] = {
+                    "publication": d["publication"],
+                    "endorsements": []
+                };
+            }
+        });
+        var dataArray = [];
+        for (var element in aggregatedData) {
+            if (aggregatedData.hasOwnProperty(element)) {
+                dataArray.push(aggregatedData[element]);
+            }
+        }
+        console.log(dataArray);
+        buildChart(dataArray);
     });
 }
 
@@ -27,20 +47,20 @@ function buildChart(data) {
         if (!d)
             return;
 
-        i = {id: 'i' + inner.length, name: d["name"], related_links: []};
+        i = {id: 'i' + inner.length, name: d["publication"], related_links: []};
         i.related_nodes = [i.id];
         inner.push(i);
 
         d["endorsements"].forEach(function (d1) {
 
-            o = outer.get(d1["name"]);
+            o = outer.get(d1["endorsed"]);
 
             if (!o) {
-                o = {name: d1["name"], id: 'o' + outerId[0], related_links: []};
+                o = {name: d1["endorsed"], id: 'o' + outerId[0], related_links: []};
                 o.related_nodes = [o.id];
                 outerId[0] = outerId[0] + 1;
 
-                outer.set(d1["name"], o);
+                outer.set(d1["endorsed"], o);
             }
 
             // create the links
