@@ -42,6 +42,8 @@ function buildChart(data) {
 
     var outerId = [0];
 
+    var allPresidents = {};
+
     data.forEach(function (d) {
 
         if (!d)
@@ -60,6 +62,7 @@ function buildChart(data) {
                 o.related_nodes = [o.id];
                 outerId[0] = outerId[0] + 1;
                 outer.set(d1["endorsed"], o);
+                allPresidents[o.id] = d1;
             }
 
             // create the links
@@ -170,16 +173,6 @@ function buildChart(data) {
         .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
 
 
-    function getColor(endorsed) {
-        console.log(endorsed);
-        if (endorsed.party === "Republican") {
-            return "red";
-        } else if (endorsed.party === "Democrat") {
-            return "blue";
-        }
-        return "whitesmoke";
-    }
-
     // links
     var link = svg.append('g').attr('class', 'links').selectAll(".link")
         .data(data.links)
@@ -190,7 +183,7 @@ function buildChart(data) {
         })
         .attr("d", diagonal)
         .attr('stroke', function (d) {
-            return getColor(d.outer);
+            return "whitesmoke";
         })
         .attr('stroke-width', link_width);
 
@@ -263,8 +256,7 @@ function buildChart(data) {
             return d.name;
         });
 
-    // need to specify x/y/etc
-
+    console.log(data);
     d3.select(self.frameElement).style("height", diameter - 150 + "px");
 
     function mouseover(d) {
@@ -273,13 +265,25 @@ function buildChart(data) {
             return d.related_links.indexOf(a.id);
         });
 
+
         for (var i = 0; i < d.related_nodes.length; i++) {
             d3.select('#' + d.related_nodes[i]).classed('highlight', true);
             d3.select('#' + d.related_nodes[i] + '-txt').attr("font-weight", 'bold');
         }
 
-        for (var i = 0; i < d.related_links.length; i++)
+        for (var i = 0; i < d.related_links.length; i++) {
             d3.select('#' + d.related_links[i]).attr('stroke-width', '5px');
+
+
+            var president = allPresidents[d.related_links[i].split("-")[2]];
+            if (president) {
+                if (president.party === "Republican") {
+                    d3.select('#' + d.related_links[i]).attr('stroke', 'red');
+                } else if (president.party === "Democrat") {
+                    d3.select('#' + d.related_links[i]).attr('stroke', 'blue');
+                }
+            }
+        }
     }
 
     function mouseout(d) {
@@ -288,9 +292,13 @@ function buildChart(data) {
             d3.select('#' + d.related_nodes[i] + '-txt').attr("font-weight", 'normal');
         }
 
-        for (var i = 0; i < d.related_links.length; i++)
+        for (var i = 0; i < d.related_links.length; i++) {
             d3.select('#' + d.related_links[i]).attr('stroke-width', link_width);
+            d3.select('#' + d.related_links[i]).attr('stroke', "whitesmoke");
+
+        }
     }
+
 
 }
 
