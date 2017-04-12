@@ -30,3 +30,9 @@ text {
 .link {
     fill: none;
 }
+
+#president-details {
+    position: absolute;
+    left: 450px;
+    top: 650px;
+}

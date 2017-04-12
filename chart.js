@@ -15,6 +15,9 @@ function fetchData() {
                 aggregatedData[d["endorsed"]] = {
                     "endorsed": d["endorsed"],
                     "party": d["party"],
+                    "potrait": d["portrait"],
+                    "age": d["age"],
+                    "homestate": d["homestate"],
                     "endorsements": []
                 };
                 aggregatedData[d["endorsed"]]["endorsements"].push(d);
@@ -256,6 +259,7 @@ function buildChart(data) {
             return d.name;
         });
 
+
     d3.select(self.frameElement).style("height", diameter - 150 + "px");
 
     function mouseover(d) {
@@ -286,6 +290,12 @@ function buildChart(data) {
                     d3.select('#' + d.related_links[i]).attr('stroke', 'yellow');
                 }
 
+                if (d.id.charAt(0) === 'i') {//inner node
+                    var age = president.age !== 0 ? president.age : "not elected";
+                    var homestate = president.homestate != 0 ? ", " + president.homestate : "";
+                    d3.select("#president-details").html("<img src='" + president.potrait + "'/>" +
+                        "<hr/> " + president.endorsed + ", " + president.party + "<br/>" + age + homestate);
+                }
             }
         }
     }
