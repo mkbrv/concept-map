@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Soviet Zeitung",
+    "endorsements": [
+      {
+        "name": "Miklos Atreides",
+        "party": "republican",
+        "year": 1995
+      },
+      {
+        "name": "Paul Atreides",
+        "party": "democrat",
+        "year": 2008
+      },
+      {
+        "name": "Janos",
+        "party": "democrat",
+        "year": 2008
+      }
+    ]
+  },
+  {
+    "name": "The United Company of Freedom",
+    "endorsements": [
+      {
+        "name": "Miklos Atreides",
+        "party": "republican",
+        "year": 2000
+      },
+      {
+        "name": "Paul Atreides",
+        "party": "democrat",
+        "year": 1992
+      },
+      {
+        "name": "Jancsi",
+        "party": "democrat",
+        "year": 1992
+      }
+    ]
+  }
+]
