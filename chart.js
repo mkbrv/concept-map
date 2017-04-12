@@ -125,7 +125,7 @@ function buildChart(data) {
 
 
     function get_color(name) {
-        var c = Math.round(color(name));
+        var c = Math.round(color(10));
         if (isNaN(c))
             return '#dddddd';	// fallback color
 
