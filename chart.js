@@ -56,10 +56,9 @@ function buildChart(data) {
             o = outer.get(d1["endorsed"]);
 
             if (!o) {
-                o = {name: d1["endorsed"], id: 'o' + outerId[0], related_links: []};
+                o = {name: d1["endorsed"], party: d1["party"], id: 'o' + outerId[0], related_links: []};
                 o.related_nodes = [o.id];
                 outerId[0] = outerId[0] + 1;
-
                 outer.set(d1["endorsed"], o);
             }
 
@@ -101,12 +100,6 @@ function buildChart(data) {
         }, 0) / data.outer.length);
 
 
-    var colors = ["#a50026", "#d73027", "#f46d43", "#fdae61", "#fee090", "#ffffbf", "#e0f3f8", "#abd9e9", "#74add1", "#4575b4", "#313695"]
-    var color = d3.scale.linear()
-        .domain([60, 220])
-        .range([colors.length - 1, 0])
-        .clamp(true);
-
     var diameter = 960;
     var rect_width = 180;
     var rect_height = 15;
@@ -143,15 +136,6 @@ function buildChart(data) {
         return d;
     });
 
-
-    function get_color(name) {
-        var c = Math.round(color(10));
-        if (isNaN(c))
-            return '#dddddd';	// fallback color
-
-        return colors[c];
-    }
-
     // Can't just use d3.svg.diagonal because one edge is in normal space, the
     // other edge is in radial space. Since we can't just ask d3 to do projection
     // of a single point, do it ourselves the same way d3 would do it.  
@@ -186,6 +170,16 @@ function buildChart(data) {
         .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
 
 
+    function getColor(endorsed) {
+        console.log(endorsed);
+        if (endorsed.party === "Republican") {
+            return "red";
+        } else if (endorsed.party === "Democrat") {
+            return "blue";
+        }
+        return "whitesmoke";
+    }
+
     // links
     var link = svg.append('g').attr('class', 'links').selectAll(".link")
         .data(data.links)
@@ -196,7 +190,7 @@ function buildChart(data) {
         })
         .attr("d", diagonal)
         .attr('stroke', function (d) {
-            return get_color(d.inner.name);
+            return getColor(d.outer);
         })
         .attr('stroke-width', link_width);
 
@@ -256,7 +250,7 @@ function buildChart(data) {
             return d.id;
         })
         .attr('fill', function (d) {
-            return get_color(d.name);
+            return '#dddddd';
         });
 
     inode.append("text")
