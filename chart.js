@@ -9,13 +9,15 @@ function fetchData() {
         var aggregatedData = {};
         /// format: Each  publication has an array of endorsed presidents;
         data.forEach(function (d) {
-            if (aggregatedData[d["publication"]]) {
-                aggregatedData[d["publication"]]["endorsements"].push(d);
+            if (aggregatedData[d["endorsed"]]) {
+                aggregatedData[d["endorsed"]]["endorsements"].push(d);
             } else {
-                aggregatedData[d["publication"]] = {
-                    "publication": d["publication"],
+                aggregatedData[d["endorsed"]] = {
+                    "endorsed": d["endorsed"],
+                    "party": d["party"],
                     "endorsements": []
                 };
+                aggregatedData[d["endorsed"]]["endorsements"].push(d);
             }
         });
         var dataArray = [];
@@ -49,20 +51,21 @@ function buildChart(data) {
         if (!d)
             return;
 
-        i = {id: 'i' + inner.length, name: d["publication"], related_links: []};
+        i = {id: 'i' + inner.length, name: d["endorsed"], related_links: []};
         i.related_nodes = [i.id];
         inner.push(i);
+        allPresidents[i.id] = d;
+
 
         d["endorsements"].forEach(function (d1) {
 
-            o = outer.get(d1["endorsed"]);
+            o = outer.get(d1["publication"]);
 
             if (!o) {
-                o = {name: d1["endorsed"], party: d1["party"], id: 'o' + outerId[0], related_links: []};
+                o = {name: d1["publication"], id: 'o' + outerId[0], related_links: []};
                 o.related_nodes = [o.id];
                 outerId[0] = outerId[0] + 1;
-                outer.set(d1["endorsed"], o);
-                allPresidents[o.id] = d1;
+                outer.set(d1["publication"], o);
             }
 
             // create the links
@@ -76,6 +79,7 @@ function buildChart(data) {
             o.related_links.push(l.id);
         });
     });
+
 
     data = {
         inner: inner,
@@ -98,9 +102,8 @@ function buildChart(data) {
             data.outer[i1++] = outer[i];
     }
 
-   
 
-    var diameter = 960;
+    var diameter = 1000;
     var rect_width = 180;
     var rect_height = 15;
 
@@ -271,13 +274,18 @@ function buildChart(data) {
             d3.select('#' + d.related_links[i]).attr('stroke-width', '5px');
 
 
-            var president = allPresidents[d.related_links[i].split("-")[2]];
+            var president = allPresidents[d.related_links[i].split("-")[1]];
             if (president) {
                 if (president.party === "Republican") {
                     d3.select('#' + d.related_links[i]).attr('stroke', 'red');
                 } else if (president.party === "Democrat") {
                     d3.select('#' + d.related_links[i]).attr('stroke', 'blue');
+                } else if (president.party === "Independent") {
+                    d3.select('#' + d.related_links[i]).attr('stroke', 'cyan');
+                } else if (president.party === "None") {
+                    d3.select('#' + d.related_links[i]).attr('stroke', 'yellow');
                 }
+
             }
         }
     }
