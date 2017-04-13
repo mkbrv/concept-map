@@ -13,9 +13,43 @@
 
 <body>
 
+<span id="chart">
+    
+</span>
+
 <span id="president-details">
     
 </span>
 
 
+<h1 id="title">
+    Presidential Nominees<br/>
+</h1>
+<span id="range-wrapper">
+    <script type="text/javascript">
+        function redraw() {
+            setTimeout(function () {
+                d3.select("#chart").html("");
+                d3.select("#president-details").html("");
+
+                chart = new Chart();
+                chart.fetchData();
+            }, 1000);
+        }
+        function showValue(newValue) {
+            document.getElementById("range").innerHTML = newValue;
+            redraw();
+        }
+        function reset() {
+            document.getElementById("range").innerHTML = "";
+            redraw();
+        }
+    </script>
+    Campaign slider (1972-2016):<br/>
+    <span id="range"></span>
+    <input id="range-value" type="range" min="1972" max="2016" value="0" step="4" onchange="showValue(this.value)"/>
+    <br/>
+    <button onclick="reset()">Reset</button>
+    
+</span>
 </body>

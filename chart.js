@@ -19,27 +19,34 @@ var Chart = function () {
         d3.json("data.json", function (error, data) {
             if (error) return console.warn(error);
 
+            // get the value of year from slider;
+            var yearFilter = parseInt(d3.select("#range").text().trim());
+
             // Each Endorsed has an array of endorsements:  Endorsed: {Name,Endorsements[]}
             var aggregatedData = {};
-            data.forEach(function (d) {
-                if (aggregatedData[d["endorsed"]]) {
-                    //if president already exists, push only the endorsement;
-                    aggregatedData[d["endorsed"]]["endorsements"].push(d);
-                } else {
-                    //creating a new endorsed (candidate)
-                    aggregatedData[d["endorsed"]] = {
-                        "endorsed": d["endorsed"],
-                        "party": d["party"],
-                        "trivia": d["trivia"],
-                        "potrait": d["portrait"],
-                        "age": d["age"],
-                        "homestate": d["homestate"],
-                        "endorsements": []
-                    };
-                    //push the endorsement data into the array.
-                    aggregatedData[d["endorsed"]]["endorsements"].push(d);
+            data.forEach(function (row) {
+                if (row.year == yearFilter || isNaN(yearFilter)) {
+                    if (aggregatedData[row["endorsed"]]) {
+                        //if president already exists, push only the endorsement;
+                        aggregatedData[row["endorsed"]]["endorsements"].push(row);
+                    } else {
+                        //creating a new endorsed (candidate)
+                        aggregatedData[row["endorsed"]] = {
+                            "endorsed": row["endorsed"],
+                            "party": row["party"],
+                            "trivia": row["trivia"],
+                            "potrait": row["portrait"],
+                            "age": row["age"],
+                            "homestate": row["homestate"],
+                            "endorsements": []
+                        };
+                        //push the endorsement data into the array.
+                        aggregatedData[row["endorsed"]]["endorsements"].push(row);
+                    }
                 }
             });
+
+            console.log(aggregatedData);
             /**
              * Transform the aggregated object in an array.
              * @type {Array}
@@ -50,6 +57,17 @@ var Chart = function () {
                     endorsedArray.push(aggregatedData[element]);
                 }
             }
+
+            // sort them alphabetically
+            function compare(a, b) {
+                if (a.endorsed < b.endorsed)
+                    return -1;
+                if (a.endorsed > b.endorsed)
+                    return 1;
+                return 0;
+            }
+
+            endorsedArray.sort(compare);
 
             self.buildChart(endorsedArray);
         });
@@ -190,7 +208,7 @@ var Chart = function () {
         /**
          * The main SVG
          */
-        var svg = d3.select("body").append("svg")
+        var svg = d3.select("#chart").append("svg")
             .attr("width", diameter)
             .attr("height", diameter)
             .append("g")
@@ -297,11 +315,14 @@ var Chart = function () {
         for (var i = 0; i < node.related_nodes.length; i++) {
             d3.select('#' + node.related_nodes[i]).classed('highlight', true);
             d3.select('#' + node.related_nodes[i] + '-txt').attr("font-weight", 'bold');
+            d3.select('#' + node.related_nodes[i] + '-txt').attr("font-size", '13px');
+            d3.select('#' + node.related_nodes[i] + '-txt').attr("stroke", 'black');
+            d3.select('#' + node.related_nodes[i] + '-txt').attr("stroke-width", '0.5');
+
         }
 
         for (var i = 0; i < node.related_links.length; i++) {
             d3.select('#' + node.related_links[i]).attr('stroke-width', '5px');
-
 
             var president = allPresidents[node.related_links[i].split("-")[1]];
             if (president) {
@@ -310,20 +331,25 @@ var Chart = function () {
                 } else if (president.party === "Democrat") {
                     d3.select('#' + node.related_links[i]).attr('stroke', 'blue');
                 } else if (president.party === "Independent") {
-                    d3.select('#' + node.related_links[i]).attr('stroke', 'cyan');
-                } else if (president.party === "None") {
                     d3.select('#' + node.related_links[i]).attr('stroke', 'yellow');
+                } else if (president.party === "None") {
+                    d3.select('#' + node.related_links[i]).attr('stroke', 'black');
                 }
 
                 if (node.id.charAt(0) === 'c') {//candidates node
-                    var age = president.age !== 0 ? president.age : "not elected";
-                    var homestate = president.homestate != 0 ? ", " + president.homestate : "";
-                    var trivia = president.trivia != 0 ? president.trivia : "";
-                    d3.select("#president-details").html(
-                        "<br/><img width='90' height='100' src='" + president.potrait + "'/>" +
-                        "<hr/> " + president.endorsed + "" +
-                        ", " + president.party + "<br/>" +
-                        age + homestate + "</br></br>" + trivia);
+                    if (president.endorsed === "None") {
+                        d3.select("#president-details").html("");
+                    } else {
+                        var age = president.age !== 0 ? president.age : "not elected";
+                        var homestate = president.homestate != 0 ? ", " + president.homestate : "";
+                        var trivia = president.trivia != 0 ? president.trivia : "";
+
+                        d3.select("#president-details").html(
+                            "<br/><img width='90' height='100' src='" + president.potrait + "'/>" +
+                            "<hr/> " + president.endorsed + "" +
+                            ", " + president.party + "<br/>" +
+                            age + homestate + "</br></br>" + trivia);
+                    }
                 }
             }
         }
@@ -337,6 +363,8 @@ var Chart = function () {
         for (var i = 0; i < node.related_nodes.length; i++) {
             d3.select('#' + node.related_nodes[i]).classed('highlight', false);
             d3.select('#' + node.related_nodes[i] + '-txt').attr("font-weight", 'normal');
+            d3.select('#' + node.related_nodes[i] + '-txt').attr("font-size", '12px');
+            d3.select('#' + node.related_nodes[i] + '-txt').attr("stroke", 'none');
         }
 
         for (var i = 0; i < node.related_links.length; i++) {
@@ -347,5 +375,9 @@ var Chart = function () {
 
 };
 
-var chart = new Chart();
-chart.fetchData();
+setTimeout(function () {
+    var chart = new Chart();
+    chart.fetchData();
+}, 100);
+
+
