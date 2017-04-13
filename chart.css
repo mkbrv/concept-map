@@ -35,7 +35,12 @@ text {
     position: absolute;
     left: 450px;
     top: 650px;
-    max-width: 140px;
-    padding: 5px;
-    border: 1px;
+    width: 120px;
+    margin: 10px 5px 5px;
+    border-style: double;
+    text-align: center;
+}
+
+#president-details img {
+    padding-left: 10px;
 }
