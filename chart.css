@@ -35,4 +35,7 @@ text {
     position: absolute;
     left: 450px;
     top: 650px;
+    max-width: 140px;
+    padding: 5px;
+    border: 1px;
 }

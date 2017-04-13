@@ -30,6 +30,7 @@ var Chart = function () {
                     aggregatedData[d["endorsed"]] = {
                         "endorsed": d["endorsed"],
                         "party": d["party"],
+                        "trivia": d["trivia"],
                         "potrait": d["portrait"],
                         "age": d["age"],
                         "homestate": d["homestate"],
@@ -220,7 +221,7 @@ var Chart = function () {
             })
             .on("mouseover", this.mouseover)
             .on("mouseout", this.mouseout);
-        
+
         pubNode.append("circle")
             .attr('id', function (d) {
                 return d.id
@@ -317,11 +318,12 @@ var Chart = function () {
                 if (node.id.charAt(0) === 'c') {//candidates node
                     var age = president.age !== 0 ? president.age : "not elected";
                     var homestate = president.homestate != 0 ? ", " + president.homestate : "";
+                    var trivia = president.trivia != 0 ? president.trivia : "";
                     d3.select("#president-details").html(
                         "<br/><img width='90' height='100' src='" + president.potrait + "'/>" +
                         "<hr/> " + president.endorsed + "" +
                         ", " + president.party + "<br/>" +
-                        age + homestate);
+                        age + homestate + "</br></br>" + trivia);
                 }
             }
         }
